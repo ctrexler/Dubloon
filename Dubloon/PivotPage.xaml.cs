@@ -41,8 +41,6 @@ namespace Dubloon
         private Geolocator geo = null;
         private CoreDispatcher _cd;
 
-        private ViewModels.AddToAzure vm = new ViewModels.AddToAzure();
-
         public PivotPage()
         {
             this.InitializeComponent();
@@ -55,7 +53,7 @@ namespace Dubloon
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
         }
-        private void Initialize()
+        private async void Initialize()
         {
             // other initialization logic
             GeofenceMonitor.Current.Geofences.Clear();
@@ -72,6 +70,38 @@ namespace Dubloon
             //        PositionChangedEventArgs>(geo_PositionChanged);
             //TEST GEOFENCE
             CreateGeofence("School", 40.427628, -86.917016, 100);
+
+            //ViewModels.AddToAzure vm = new ViewModels.AddToAzure();
+            //TableHunts blah = new TableHunts();
+            //blah.Title = "TreasureHunt";
+            //blah.Author = "Corbin Trexler";
+            //blah.Description = "A fun hunt!";
+            //blah.Difficulty = 5;
+            //blah.Duration = 10;
+            //vm.AddHuntToAzure(blah);
+
+            //TableTrails blah2 = new TableTrails();
+            //blah2.Name = "Trail Name";
+            //blah2.HuntId = "w345yrgtv245wrtv";
+            //vm.AddTrailToAzure(blah2);
+
+            //TableNodes blah3 = new TableNodes();
+            //blah3.Name = "Node Name";
+            //blah3.Latitude = 40.111;
+            //blah3.Longitude = 85.111;
+            //blah3.Radius = 100;
+            //blah3.TrailId = "w345yrgtv245wrtv";
+            //vm.AddNodeToAzure(blah3);
+
+            //ViewModels.PullFromAzure vm2 = new ViewModels.PullFromAzure();
+            //var blah4 = await vm2.PullHuntsFromAzure();
+            //System.Diagnostics.Debug.WriteLine(blah4[0].Title);
+
+            //var blah5 = await vm2.PullTrailsFromAzure();
+            //System.Diagnostics.Debug.WriteLine(blah5[0].Name);
+
+            //var blah6 = await vm2.PullNodesFromAzure();
+            //System.Diagnostics.Debug.WriteLine(blah6[0].Name);
         }
 
         public async void OnGeofenceStateChanged(GeofenceMonitor sender, object e)

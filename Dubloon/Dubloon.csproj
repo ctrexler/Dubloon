@@ -123,6 +123,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AddToAzure.cs" />
+    <Compile Include="ViewModels\PullFromAzure.cs" />
     <Compile Include="Views\Hunt.xaml.cs">
       <DependentUpon>Hunt.xaml</DependentUpon>
     </Compile>
