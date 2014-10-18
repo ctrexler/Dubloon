@@ -1,4 +1,5 @@
 ﻿using Dubloon.Common;
+using Microsoft.WindowsAzure.MobileServices;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -137,5 +138,11 @@ namespace Dubloon
             await SuspensionManager.SaveAsync();
             deferral.Complete();
         }
+
+        // CONNECTION TO AZURE MOBILE SERVICES
+        public static MobileServiceClient MobileService = new MobileServiceClient(
+            "https://dubloon.azure-mobile.net/",
+            "VbTkDeFnEDAhmLMGykcyGJmOjmXDCy87"
+        );
     }
 }

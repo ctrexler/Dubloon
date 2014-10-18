@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Dubloon.Models;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -40,6 +41,8 @@ namespace Dubloon
         private Geolocator geo = null;
         private CoreDispatcher _cd;
 
+        private ViewModels.AddToAzure vm = new ViewModels.AddToAzure();
+
         public PivotPage()
         {
             this.InitializeComponent();
@@ -55,6 +58,7 @@ namespace Dubloon
         private void Initialize()
         {
             // other initialization logic
+            GeofenceMonitor.Current.Geofences.Clear();
             RegisterBackgroundTask();
             GeofenceMonitor.Current.GeofenceStateChanged += OnGeofenceStateChanged;
             if (geo == null)
