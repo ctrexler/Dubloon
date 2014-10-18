@@ -28,7 +28,7 @@ using Dubloon.Models;
 
 namespace Dubloon
 {
-    public sealed partial class PivotPage : Page
+    public sealed partial class Main : Page
     {
         private const string FirstGroupName = "FirstGroup";
         private const string SecondGroupName = "SecondGroup";
@@ -41,7 +41,7 @@ namespace Dubloon
         private Geolocator geo = null;
         private CoreDispatcher _cd;
 
-        public PivotPage()
+        public Main()
         {
             this.InitializeComponent();
             _cd = Window.Current.CoreWindow.Dispatcher;
@@ -53,7 +53,7 @@ namespace Dubloon
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
         }
-        private async void Initialize()
+        private /*async*/ void Initialize()
         {
             // other initialization logic
             GeofenceMonitor.Current.Geofences.Clear();
@@ -202,7 +202,7 @@ namespace Dubloon
             }
         }
 
-# region NAVIGATION
+        # region NAVIGATION
         /// <summary>
         /// Gets the <see cref="NavigationHelper"/> associated with this <see cref="Page"/>.
         /// </summary>
@@ -250,31 +250,31 @@ namespace Dubloon
         {
             // TODO: Save the unique state of the page here.
         }
-# endregion
+        # endregion
 
         /// <summary>
         /// Adds an item to the list when the app bar button is clicked.
         /// </summary>
-        private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
-        {
-            string groupName = this.pivot.SelectedIndex == 0 ? FirstGroupName : SecondGroupName;
-            var group = this.DefaultViewModel[groupName] as SampleDataGroup;
-            var nextItemId = group.Items.Count + 1;
-            var newItem = new SampleDataItem(
-                string.Format(CultureInfo.InvariantCulture, "Group-{0}-Item-{1}", this.pivot.SelectedIndex + 1, nextItemId),
-                string.Format(CultureInfo.CurrentCulture, this.resourceLoader.GetString("NewItemTitle"), nextItemId),
-                string.Empty,
-                string.Empty,
-                this.resourceLoader.GetString("NewItemDescription"),
-                string.Empty);
+        //private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    string groupName = this.pivot.SelectedIndex == 0 ? FirstGroupName : SecondGroupName;
+        //    var group = this.DefaultViewModel[groupName] as SampleDataGroup;
+        //    var nextItemId = group.Items.Count + 1;
+        //    var newItem = new SampleDataItem(
+        //        string.Format(CultureInfo.InvariantCulture, "Group-{0}-Item-{1}", this.pivot.SelectedIndex + 1, nextItemId),
+        //        string.Format(CultureInfo.CurrentCulture, this.resourceLoader.GetString("NewItemTitle"), nextItemId),
+        //        string.Empty,
+        //        string.Empty,
+        //        this.resourceLoader.GetString("NewItemDescription"),
+        //        string.Empty);
 
-            group.Items.Add(newItem);
+        //    group.Items.Add(newItem);
 
-            // Scroll the new item into view.
-            var container = this.pivot.ContainerFromIndex(this.pivot.SelectedIndex) as ContentControl;
-            var listView = container.ContentTemplateRoot as ListView;
-            listView.ScrollIntoView(newItem, ScrollIntoViewAlignment.Leading);
-        }
+        //    // Scroll the new item into view.
+        //    var container = this.pivot.ContainerFromIndex(this.pivot.SelectedIndex) as ContentControl;
+        //    var listView = container.ContentTemplateRoot as ListView;
+        //    listView.ScrollIntoView(newItem, ScrollIntoViewAlignment.Leading);
+        //}
 
         /// <summary>
         /// Invoked when an item within a section is clicked.
@@ -288,15 +288,6 @@ namespace Dubloon
             {
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
-        }
-
-        /// <summary>
-        /// Loads the content for the second pivot item when it is scrolled into view.
-        /// </summary>
-        private async void SecondPivot_Loaded(object sender, RoutedEventArgs e)
-        {
-            var sampleDataGroup = await SampleDataSource.GetGroupAsync("Group-2");
-            this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
         }
 
         #region NavigationHelper registration
@@ -409,9 +400,25 @@ namespace Dubloon
 
         }
 
+        private void pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if ((sender as Pivot).SelectedIndex == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("The pivot is at current");
+            }
+            else if ((sender as Pivot).SelectedIndex == 1)
+            {
+                System.Diagnostics.Debug.WriteLine("The pivot is at corbin's");
+            }
+            else if ((sender as Pivot).SelectedIndex == 2)
+            {
+                System.Diagnostics.Debug.WriteLine("The pivot is at favorite");
+            }
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(Views.Hunt));
+            this.Frame.Navigate(typeof(Views.Trail));
         }
     }
 }
