@@ -374,5 +374,10 @@ namespace Dubloon
             GeofenceMonitor.Current.Geofences.Add(geofence);
 
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(Views.Hunt));
+        }
     }
 }
