@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Resources;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
@@ -53,7 +54,7 @@ namespace Dubloon
         private void Initialize()
         {
             // other initialization logic
-
+            RegisterBackgroundTask();
             GeofenceMonitor.Current.GeofenceStateChanged += OnGeofenceStateChanged;
         }
 
@@ -77,7 +78,8 @@ namespace Dubloon
                     else if (state == GeofenceState.Entered)
                     {
                         // Your app takes action based on the entered event
-                        System.Diagnostics.Debug.WriteLine("You've enetered aq geofence!");
+                        //TEST GEOFENCE ENTRANCE
+                        //System.Diagnostics.Debug.WriteLine("You've enetered a geofence!");
 
                         // NOTE: You might want to write your app to take particular
                         // action based on whether the app has internet connectivity.
@@ -93,6 +95,65 @@ namespace Dubloon
                     }
                 }
             });
+        }
+
+
+        async private void RegisterBackgroundTask(/*object sender, RoutedEventArgs e*/)
+        {
+            // Get permission for a background task from the user. If the user has already answered once,
+            // this does nothing and the user must manually update their preference via PC Settings.
+            BackgroundAccessStatus backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
+
+            // Regardless of the answer, register the background task. If the user later adds this application
+            // to the lock screen, the background task will be ready to run.
+            // Create a new background task builder
+            BackgroundTaskBuilder geofenceTaskBuilder = new BackgroundTaskBuilder();
+
+            geofenceTaskBuilder.Name = "GeofenceBackgroundTask";
+            geofenceTaskBuilder.TaskEntryPoint = typeof(BackgroundTasks.GeofenceBackgroundTask).FullName;
+
+            // Create a new location trigger
+            var trigger = new LocationTrigger(LocationTriggerType.Geofence);
+
+            // Associate the locationi trigger with the background task builder
+            geofenceTaskBuilder.SetTrigger(trigger);
+
+            // If it is important that there is user presence and/or
+            // internet connection when OnCompleted is called
+            // the following could be called before calling Register()
+            // SystemCondition condition = new SystemCondition(SystemConditionType.UserPresent | SystemConditionType.InternetAvailable);
+            // geofenceTaskBuilder.AddCondition(condition);
+
+            // Register the background task
+            BackgroundTaskRegistration geofenceTask = geofenceTaskBuilder.Register();
+
+            // Associate an event handler with the new background task
+            geofenceTask.Completed += new BackgroundTaskCompletedEventHandler(OnCompleted);
+
+            //BackgroundTaskState.RegisterBackgroundTask(BackgroundTaskState.LocationTriggerBackgroundTaskName);
+
+            //switch (backgroundAccessStatus)
+            //{
+            //    case BackgroundAccessStatus.Unspecified:
+            //    case BackgroundAccessStatus.Denied:
+            //        rootPage.NotifyUser("This application must be added to the lock screen before the background task will run.", NotifyType.ErrorMessage);
+            //        break;
+
+            //}
+        }
+
+        async private void OnCompleted(IBackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs e)
+        {
+            if (sender != null)
+            {
+                // Update the UI with progress reported by the background task
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    // do your apps work here
+                    //TEST RETURN-TO-APP EVENT
+                    textTriggered.Text = "TRIGGERED!!!";
+                });
+            }
         }
 
 # region NAVIGATION
@@ -233,6 +294,8 @@ namespace Dubloon
                 geo.PositionChanged +=
                     new TypedEventHandler<Geolocator,
                         PositionChangedEventArgs>(geo_PositionChanged);
+                //TEST GEOFENCE
+                //CreateGeofence("School", 40.427628, -86.917016, 100);
             }
         }
 

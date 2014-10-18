@@ -78,6 +78,7 @@
                     <TextBlock Margin="14,220,0,0" Text="Latitude" Name="textLatitude" />
                     <TextBlock Margin="14,260,0,0" Text="Longitude" Name="textLongitude" />
                     <TextBlock Margin="14,300,0,0" Text="Accuracy" Name="textAccuracy" />
+                    <TextBlock Margin="14,340,0,0" Text="Triggered" Name="textTriggered" />
 
                 </Grid>
             </PivotItem>
