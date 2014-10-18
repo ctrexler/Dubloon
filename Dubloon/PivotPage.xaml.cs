@@ -31,6 +31,7 @@ namespace Dubloon
     {
         private const string FirstGroupName = "FirstGroup";
         private const string SecondGroupName = "SecondGroup";
+        private const string ThirdGroupName = "ThirdGroup";
 
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
@@ -56,6 +57,17 @@ namespace Dubloon
             // other initialization logic
             RegisterBackgroundTask();
             GeofenceMonitor.Current.GeofenceStateChanged += OnGeofenceStateChanged;
+            if (geo == null)
+            {
+                geo = new Geolocator();
+            }
+            geo.ReportInterval = 1000;
+            geo.DesiredAccuracy = Windows.Devices.Geolocation.PositionAccuracy.High;
+            //geo.PositionChanged +=
+            //    new TypedEventHandler<Geolocator,
+            //        PositionChangedEventArgs>(geo_PositionChanged);
+            //TEST GEOFENCE
+            CreateGeofence("School", 40.427628, -86.917016, 100);
         }
 
         public async void OnGeofenceStateChanged(GeofenceMonitor sender, object e)
@@ -79,7 +91,7 @@ namespace Dubloon
                     {
                         // Your app takes action based on the entered event
                         //TEST GEOFENCE ENTRANCE
-                        //System.Diagnostics.Debug.WriteLine("You've enetered a geofence!");
+                        System.Diagnostics.Debug.WriteLine("You've enetered a geofence!");
 
                         // NOTE: You might want to write your app to take particular
                         // action based on whether the app has internet connectivity.
@@ -151,7 +163,7 @@ namespace Dubloon
                 {
                     // do your apps work here
                     //TEST RETURN-TO-APP EVENT
-                    textTriggered.Text = "TRIGGERED!!!";
+                    System.Diagnostics.Debug.WriteLine("Returning to app!!!");
                 });
             }
         }
@@ -280,43 +292,17 @@ namespace Dubloon
 
         #endregion
 
-        private void button1_Click(object sender, RoutedEventArgs e)
-        {
-            if (geo == null)
-            {
-                geo = new Geolocator();
-            }
-            if (geo != null)
-            {
-                geo.ReportInterval = 1000;
-                geo.DesiredAccuracy = Windows.Devices.Geolocation.PositionAccuracy.High;
-
-                geo.PositionChanged +=
-                    new TypedEventHandler<Geolocator,
-                        PositionChangedEventArgs>(geo_PositionChanged);
-                //TEST GEOFENCE
-                //CreateGeofence("School", 40.427628, -86.917016, 100);
-            }
-        }
-
-        private void button2_Click(object sender, RoutedEventArgs e)
-        {
-            if (geo != null)
-            {
-                geo.PositionChanged -= new TypedEventHandler<Geolocator, PositionChangedEventArgs>(geo_PositionChanged);
-            }
-        }
-
-        async private void geo_PositionChanged(Geolocator sender, PositionChangedEventArgs e)
-        {
-            await _cd.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                Geoposition pos = e.Position;
-                textLatitude.Text = "Latitude: " + pos.Coordinate.Point.Position.Latitude.ToString();
-                textLongitude.Text = "Longitude: " + pos.Coordinate.Point.Position.Longitude.ToString();
-                textAccuracy.Text = "Accuracy: " + pos.Coordinate.Accuracy.ToString();
-            });
-        }
+        // CONTINUALLY TRACK AND DISPLAY LOCATION CHANGES
+        //async private void geo_PositionChanged(Geolocator sender, PositionChangedEventArgs e)
+        //{
+        //    await _cd.RunAsync(CoreDispatcherPriority.Normal, () =>
+        //    {
+        //        Geoposition pos = e.Position;
+        //        textLatitude.Text = "Latitude: " + pos.Coordinate.Point.Position.Latitude.ToString();
+        //        textLongitude.Text = "Longitude: " + pos.Coordinate.Point.Position.Longitude.ToString();
+        //        textAccuracy.Text = "Accuracy: " + pos.Coordinate.Accuracy.ToString();
+        //    });
+        //}
 
         private void CreateGeofence(string Id, double Latitude, double Longitude, double Radius)
         {

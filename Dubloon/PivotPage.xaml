@@ -38,20 +38,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,9.5">
-                                <TextBlock
-                                    Text="{Binding Title}"
-                                    TextWrapping="Wrap"
-                                    Pivot.SlideInAnimationGroup="1"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{ThemeResource ListViewItemTextBlockStyle}"
-                                    Margin="0,0,19,0"/>
-                                <TextBlock
-                                    Text="{Binding Description}"
-                                    TextWrapping="WrapWholeWords"
-                                    Pivot.SlideInAnimationGroup="2" 
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True" 
-                                    Style="{ThemeResource ListViewItemContentTextBlockStyle}"
-                                    Margin="0,0,19,0"/>
+                                <TextBlock Text="blah" />
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -66,21 +53,43 @@
                 DataContext="{Binding SecondGroup}"
                 d:DataContext="{Binding Groups[1], Source={d:DesignData Source=/DataModel/SampleData.json, Type=data:SampleDataSource}}">
                 <!--Double line list no text wrapping-->
-                <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                    <Button Content="Track Location" Click="button1_Click" 
-                            HorizontalAlignment="Left" Margin="11,158,0,0" Name="button1" 
-                            VerticalAlignment="Top" />
+                <ListView
+                    ItemsSource="{Binding Items}"
+                    IsItemClickEnabled="True"
+                    ItemClick="ItemView_ItemClick"
+                    ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,9.5">
+                                <TextBlock Text="blah" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </PivotItem>
 
-                    <Button Content="Stop Tracking" Click="button2_Click" 
-                            HorizontalAlignment="Left" Margin="215,158,0,0" Name="button2" 
-                            VerticalAlignment="Top" />
-
-                    <TextBlock Margin="14,220,0,0" Text="Latitude" Name="textLatitude" />
-                    <TextBlock Margin="14,260,0,0" Text="Longitude" Name="textLongitude" />
-                    <TextBlock Margin="14,300,0,0" Text="Accuracy" Name="textAccuracy" />
-                    <TextBlock Margin="14,340,0,0" Text="Triggered" Name="textTriggered" />
-
-                </Grid>
+            <!--Pivot item three-->
+            <PivotItem
+                x:Uid="PivotItem3"
+                Margin="19,14.5,0,0"
+                Header="third"
+                DataContext="{Binding ThirdGroup}"
+                d:DataContext="{Binding Groups[2], Source={d:DesignData Source=/DataModel/SampleData.json, Type=data:SampleDataSource}}"
+                CommonNavigationTransitionInfo.IsStaggerElement="True">
+                <!--Double line list with text wrapping-->
+                <ListView
+                    ItemsSource="{Binding Items}"
+                    IsItemClickEnabled="True"
+                    ItemClick="ItemView_ItemClick"
+                    ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,9.5">
+                                <TextBlock Text="blah" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </PivotItem>
         </Pivot>
     </Grid>
