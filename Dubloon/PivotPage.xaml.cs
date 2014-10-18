@@ -8,9 +8,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Resources;
+using Windows.Devices.Geolocation;
+using Windows.Devices.Geolocation.Geofencing;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -32,9 +35,14 @@ namespace Dubloon
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
 
+        private Geolocator geo = null;
+        private CoreDispatcher _cd;
+
         public PivotPage()
         {
             this.InitializeComponent();
+            _cd = Window.Current.CoreWindow.Dispatcher;
+            Initialize();
 
             this.NavigationCacheMode = NavigationCacheMode.Required;
 
@@ -42,7 +50,52 @@ namespace Dubloon
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
         }
+        private void Initialize()
+        {
+            // other initialization logic
 
+            GeofenceMonitor.Current.GeofenceStateChanged += OnGeofenceStateChanged;
+        }
+
+        public async void OnGeofenceStateChanged(GeofenceMonitor sender, object e)
+        {
+            var reports = sender.ReadReports();
+
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                foreach (GeofenceStateChangeReport report in reports)
+                {
+                    GeofenceState state = report.NewState;
+
+                    Geofence geofence = report.Geofence;
+
+                    if (state == GeofenceState.Removed)
+                    {
+                        // remove the geofence from the geofences collection
+                        GeofenceMonitor.Current.Geofences.Remove(geofence);
+                    }
+                    else if (state == GeofenceState.Entered)
+                    {
+                        // Your app takes action based on the entered event
+                        System.Diagnostics.Debug.WriteLine("You've enetered aq geofence!");
+
+                        // NOTE: You might want to write your app to take particular
+                        // action based on whether the app has internet connectivity.
+
+                    }
+                    else if (state == GeofenceState.Exited)
+                    {
+                        // Your app takes action based on the exited event
+
+                        // NOTE: You might want to write your app to take particular
+                        // action based on whether the app has internet connectivity.
+
+                    }
+                }
+            });
+        }
+
+# region NAVIGATION
         /// <summary>
         /// Gets the <see cref="NavigationHelper"/> associated with this <see cref="Page"/>.
         /// </summary>
@@ -90,6 +143,7 @@ namespace Dubloon
         {
             // TODO: Save the unique state of the page here.
         }
+# endregion
 
         /// <summary>
         /// Adds an item to the list when the app bar button is clicked.
@@ -164,5 +218,112 @@ namespace Dubloon
         }
 
         #endregion
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            if (geo == null)
+            {
+                geo = new Geolocator();
+            }
+            if (geo != null)
+            {
+                geo.ReportInterval = 1000;
+                geo.DesiredAccuracy = Windows.Devices.Geolocation.PositionAccuracy.High;
+
+                geo.PositionChanged +=
+                    new TypedEventHandler<Geolocator,
+                        PositionChangedEventArgs>(geo_PositionChanged);
+            }
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            if (geo != null)
+            {
+                geo.PositionChanged -= new TypedEventHandler<Geolocator, PositionChangedEventArgs>(geo_PositionChanged);
+            }
+        }
+
+        async private void geo_PositionChanged(Geolocator sender, PositionChangedEventArgs e)
+        {
+            await _cd.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                Geoposition pos = e.Position;
+                textLatitude.Text = "Latitude: " + pos.Coordinate.Point.Position.Latitude.ToString();
+                textLongitude.Text = "Longitude: " + pos.Coordinate.Point.Position.Longitude.ToString();
+                textAccuracy.Text = "Accuracy: " + pos.Coordinate.Accuracy.ToString();
+            });
+        }
+
+        private void CreateGeofence(string Id, double Latitude, double Longitude, double Radius)
+        {
+            Geofence geofence = null;
+
+            string fenceKey = Id;
+
+            BasicGeoposition position;
+            position.Latitude = Latitude;
+            position.Longitude = Longitude;
+            position.Altitude = 0.0;
+            double radius = Radius;
+
+            // the geofence is a circular region
+            Geocircle geocircle = new Geocircle(position, radius);
+
+            bool singleUse = true;
+
+            // want to listen for enter geofence, exit geofence and remove geofence events
+            // you can select a subset of these event states
+            MonitoredGeofenceStates mask = 0;
+
+            mask |= MonitoredGeofenceStates.Entered;
+            //mask |= MonitoredGeofenceStates.Exited;
+            //mask |= MonitoredGeofenceStates.Removed;
+
+            // setting up how long you need to be in geofence for enter event to fire
+            TimeSpan dwellTime = new TimeSpan(0);
+            // DWELL TIME: "ParseTimeSpan" not working
+            //if ("" != DwellTime.Text)
+            //{
+            //    dwellTime = new TimeSpan(ParseTimeSpan(DwellTime.Text, defaultDwellTimeSeconds));
+            //}
+            //else
+            //{
+            //    dwellTime = new TimeSpan(ParseTimeSpan("0", defaultDwellTimeSeconds));
+            //}
+
+            // setting up how long the geofence should be active
+            TimeSpan duration = new TimeSpan(0);
+
+            //TIME SPAN: "ParseTimeSpan" not working
+            //if ("" != Duration.Text)
+            //{
+            //    duration = new TimeSpan(ParseTimeSpan(Duration.Text, 0));
+            //}
+            //else
+            //{
+            //    duration = new TimeSpan(ParseTimeSpan("0", 0));
+            //}
+
+            // setting up the start time of the geofence
+            DateTimeOffset startTime = DateTime.Now;
+
+            //START TIME: How to set start time
+            //if ("" != StartTime.Text)
+            //{
+            //    startTime = DateTimeOffset.Parse(StartTime.Text);
+            //}
+            //else
+            //{
+            //    // if you don't set start time in C# the start time defaults to 1/1/1601
+            //    calendar.SetToNow();
+
+            //    startTime = calendar.GetDateTime();
+            //}
+
+            geofence = new Geofence(fenceKey, geocircle, mask, singleUse, dwellTime, startTime, duration);
+            GeofenceMonitor.Current.Geofences.Add(geofence);
+
+        }
     }
 }
