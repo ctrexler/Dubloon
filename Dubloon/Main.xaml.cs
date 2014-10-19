@@ -38,6 +38,8 @@ namespace Dubloon
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
 
+        Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
         private Geolocator geo = null;
         private CoreDispatcher _cd;
 
@@ -209,6 +211,7 @@ namespace Dubloon
                     //TEST RETURN-TO-APP EVENT
                     System.Diagnostics.Debug.WriteLine("Returning to app!!!");
                     this.Frame.Navigate(typeof(Views.Node));
+                    Views.PassedData.Title = localSettings.Values["geofenceId"].ToString();
                 });
             }
         }

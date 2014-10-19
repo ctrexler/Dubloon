@@ -8,6 +8,10 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.DataContext>
+        <local:PassedData />
+    </Page.DataContext>
+
     <Grid x:Name="LayoutRoot">
 
         <Grid.ChildrenTransitions>
@@ -24,12 +28,22 @@
         <!-- Title Panel -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
             <TextBlock Text="DUBLOON" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
-            <TextBlock Text="node" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+            <TextBlock Text="{Binding Title}" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
         </StackPanel>
 
         <!--TODO: Content should be placed within the following grid-->
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <Button Click="Button_Click" Content="CLICK" />
+            <StackPanel Margin="20">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <TextBlock Name="xBox" Text="Flips X-axis: " FontSize="36" FontFamily="Segoe WP Black" />
+                    <TextBlock Name="xBox2" Text="" FontSize="36" FontFamily="Segoe WP Black" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Name="yBox" Text="Flips Y-axis: " FontSize="36" FontFamily="Segoe WP Black" />
+                    <TextBlock Name="yBox2" Text="" FontSize="36" FontFamily="Segoe WP Black" />
+                </StackPanel>
+                <TextBlock Name="zBox" Text="" Margin="45,100,47.667,100" FontSize="50" FontFamily="Segoe WP Black" />
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

@@ -12,6 +12,8 @@ namespace BackgroundTasks
 {
     public sealed class GeofenceBackgroundTask : IBackgroundTask
     {
+        Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+
         public void Run(IBackgroundTaskInstance taskInstance)
         {
             System.Diagnostics.Debug.WriteLine("Triggered from background!");
@@ -20,6 +22,7 @@ namespace BackgroundTasks
             {
                 Geofence geofence = report.Geofence;
                 value = geofence.Id.ToString();
+                localSettings.Values["geofenceId"] = value;
             }
 
             System.Diagnostics.Debug.WriteLine("Toast");
@@ -31,6 +34,7 @@ namespace BackgroundTasks
             var toast = new ToastNotification(toastXML);
 
             ToastNotificationManager.CreateToastNotifier().Show(toast);
+            
         }
     }
 }

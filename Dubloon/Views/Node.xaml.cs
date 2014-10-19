@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Devices.Sensors;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -28,6 +30,18 @@ namespace Dubloon.Views
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
+        int flipsX = 0;
+        int flipsY = 0;
+        int checkerX = 0;
+        int checkerY = 0;
+        int CODE_X = 3;
+        int CODE_Y = 2;
+        AccelerometerReading reading;
+
+        private Accelerometer _accelerometer;
+        private uint _desiredReportInterval;
+        private DispatcherTimer _dispatcherTimer;
+
         public Node()
         {
             this.InitializeComponent();
@@ -35,6 +49,21 @@ namespace Dubloon.Views
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            _accelerometer = Accelerometer.GetDefault();
+            if (_accelerometer != null)
+            {
+                // Select a report interval that is both suitable for the purposes of the app and supported by the sensor.
+                // This value will be used later to activate the sensor.
+                uint minReportInterval = _accelerometer.MinimumReportInterval;
+                _desiredReportInterval = minReportInterval > 16 ? minReportInterval : 16;
+
+                // Set up a DispatchTimer
+                _dispatcherTimer = new DispatcherTimer();
+                _dispatcherTimer.Tick += DisplayCurrentReading;
+                _dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, (int)_desiredReportInterval);
+                reading = _accelerometer.GetCurrentReading();
+            }
         }
 
         /// <summary>
@@ -99,6 +128,7 @@ namespace Dubloon.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.navigationHelper.OnNavigatedTo(e);
+            ScenarioEnable();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -108,9 +138,124 @@ namespace Dubloon.Views
 
         #endregion
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ScenarioEnable(/*object sender, RoutedEventArgs e*/)
         {
-            this.Frame.Navigate(typeof(Task));
+            if (_accelerometer != null)
+            {
+                // Set the report interval to enable the sensor for polling
+                _accelerometer.ReportInterval = _desiredReportInterval;
+
+                Window.Current.VisibilityChanged += new WindowVisibilityChangedEventHandler(VisibilityChanged);
+                _dispatcherTimer.Start();
+            }
+        }
+
+        private void VisibilityChanged(object sender, VisibilityChangedEventArgs e)
+        {
+            if (e.Visible)
+            {
+                // Re-enable sensor input (no need to restore the desired reportInterval... it is restored for us upon app resume)
+                _dispatcherTimer.Start();
+            }
+            else
+            {
+                // Disable sensor input (no need to restore the default reportInterval... resources will be released upon app suspension)
+                _dispatcherTimer.Stop();
+            }
+        }
+
+        private void DisplayCurrentReading(object sender, object args)
+        {
+            reading = _accelerometer.GetCurrentReading();
+            if (reading != null)
+            {
+                if (flippedX())
+                {
+                    flipsX++;
+                    xBox.Text = "Flips X-axis: " + flipsX;
+                }
+                else if (flippedY())
+                {
+                    flipsY++;
+                    yBox.Text = "Flips Y-axis: " + flipsY;
+                }
+                else if (flipsX == CODE_X && flipsY == CODE_Y)
+                {
+                    zBox.Text = "Unlocked!";
+                }
+            }
+        }
+
+        private bool flippedX()
+        {
+            //if (flipsX != CODE_X && Math.Round(reading.AccelerationY, 2) >= 0.60
+            //                && Math.Round(reading.AccelerationY, 2) <= 1.00)
+            //{
+            //    flipsX = flipsY = 0;
+            //    checkerX = checkerY = 0;
+            //}
+            if (Math.Round(reading.AccelerationX, 2) >= 0.80 &&
+                Math.Round(reading.AccelerationX, 2) <= 1.00 && checkerX == 0)
+            {
+                checkerX = 1;
+                //blahBox.Text = "CheckerX: " + checkerX;
+            }
+            else if (Math.Round(reading.AccelerationX, 2) >= -0.20 &&
+                 Math.Round(reading.AccelerationX, 2) <= 0.20 && checkerX == 1)
+            {
+                checkerX = 2;
+                //blahBox.Text = "CheckerX: " + checkerX;
+            }
+            else if (Math.Round(reading.AccelerationX, 2) <= -0.80 &&
+                Math.Round(reading.AccelerationX, 2) >= -1.00 && checkerX == 2)
+            {
+                checkerX = 3;
+                //blahBox.Text = "CheckerX: " + checkerX;
+            }
+            else if (Math.Round(reading.AccelerationX, 2) >= -0.20 &&
+                Math.Round(reading.AccelerationX, 2) <= 0.20 && checkerX == 3)
+            {
+                checkerX = 0;
+                //blahBox.Text = "CheckerX: " + checkerX;
+                return true;
+            }
+            return false;
+        }
+
+        private bool flippedY()
+        {
+            //if (flipsY != CODE_Y && Math.Round(reading.AccelerationX, 2) >= 0.60
+            //                && Math.Round(reading.AccelerationX, 2) <= 1.00)
+            //{
+            //    flipsX = flipsY = 0;
+            //    checkerX = checkerY = 0;
+            //}
+            if (Math.Round(reading.AccelerationY, 2) >= 0.80 &&
+                Math.Round(reading.AccelerationY, 2) <= 1.00 && checkerY == 0)
+            {
+                checkerY = 1;
+                //blahBox.Text = "CheckerY: " + checkerY;
+            }
+            else if (Math.Round(reading.AccelerationY, 2) >= -0.20 &&
+                 Math.Round(reading.AccelerationY, 2) <= 0.20 && checkerY == 1)
+            {
+                checkerY = 2;
+                //blahBox.Text = "CheckerY: " + checkerY;
+            }
+            else if (Math.Round(reading.AccelerationY, 2) <= -0.80 &&
+                Math.Round(reading.AccelerationY, 2) >= -1.00 && checkerY == 2)
+            {
+                checkerY = 3;
+                //blahBox.Text = "CheckerY: " + checkerY;
+            }
+            else if (Math.Round(reading.AccelerationY, 2) >= -0.20 &&
+                Math.Round(reading.AccelerationY, 2) <= 0.20 && checkerY == 3)
+            {
+                checkerY = 0;
+                //blahBox.Text = "CheckerY: " + checkerY;
+                return true;
+            }
+            return false;
         }
     }
 }
