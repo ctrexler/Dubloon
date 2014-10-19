@@ -41,6 +41,8 @@ namespace Dubloon
         private Geolocator geo = null;
         private CoreDispatcher _cd;
 
+        ObservableCollection<TableHunts> hunts = new ObservableCollection<TableHunts>();
+
         public Main()
         {
             this.InitializeComponent();
@@ -53,7 +55,7 @@ namespace Dubloon
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
         }
-        private /*async*/ void Initialize()
+        private async void Initialize()
         {
             // other initialization logic
             GeofenceMonitor.Current.Geofences.Clear();
@@ -70,6 +72,14 @@ namespace Dubloon
             //        PositionChangedEventArgs>(geo_PositionChanged);
             //TEST GEOFENCE
             CreateGeofence("School", 40.427628, -86.917016, 100);
+
+            var huntsResponse = await ViewModels.PullFromAzure.PullHuntsFromAzure();
+            System.Diagnostics.Debug.WriteLine(huntsResponse.Count);
+            foreach (TableHunts h in huntsResponse)
+            {
+                hunts.Add(h);
+                System.Diagnostics.Debug.WriteLine(h.Title);
+            }
 
             //ViewModels.AddToAzure vm = new ViewModels.AddToAzure();
             //TableHunts blah = new TableHunts();
@@ -421,29 +431,35 @@ namespace Dubloon
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(Views.Trail));
+            this.Frame.Navigate(typeof(Views.Hunt));
         }
 
         private void ButtonCreateHunt_Click(object sender, RoutedEventArgs e)
         {
-            form.Visibility = Visibility.Visible;
+            FormCreateHunt.Visibility = Visibility.Visible;
             ButtonCreateHunt.Visibility = Visibility.Collapsed;
             ButtonCancelHunt.Visibility = Visibility.Visible;
             ButtonSubmitHunt.Visibility = Visibility.Visible;
         }
         private void ButtonCancelHunt_Click(object sender, RoutedEventArgs e)
         {
-            form.Visibility = Visibility.Collapsed;
+            FormCreateHunt.Visibility = Visibility.Collapsed;
             ButtonCreateHunt.Visibility = Visibility.Visible;
             ButtonCancelHunt.Visibility = Visibility.Collapsed;
             ButtonSubmitHunt.Visibility = Visibility.Collapsed;
         }
         private void ButtonSubmitHunt_Click(object sender, RoutedEventArgs e)
         {
-            form.Visibility = Visibility.Collapsed;
+            FormCreateHunt.Visibility = Visibility.Collapsed;
             ButtonCreateHunt.Visibility = Visibility.Visible;
             ButtonCancelHunt.Visibility = Visibility.Collapsed;
             ButtonSubmitHunt.Visibility = Visibility.Collapsed;
+        }
+
+        private void ListViewHunts_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.ListViewHunts = (ListView)sender;
+            this.ListViewHunts.ItemsSource = hunts;
         }
 
         

@@ -21,22 +21,39 @@
     <Grid>
         <Pivot Name="Pivot" Title="DUBLOON" SelectionChanged="pivot_SelectionChanged">
             <!-- Pivot Item One-->
-            <PivotItem
-                Header="current">
+            <PivotItem Header="current">
                 <Button Content="CLICK!" Click="Button_Click" />
             </PivotItem>
 
             <!-- Pivot Item Two-->
-            <PivotItem
-                Header="corbin's">
+            <PivotItem Header="corbin's">
+                <ListView Name="ListViewHunts" Loaded="ListViewHunts_Loaded">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="Assets/TreasureMap.png" Height="50" Width="75" />
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Title}" FontFamily="Segoe WP Black" FontSize="20" />
+                                        <TextBlock Text="{Binding Author}" FontFamily="Segoe WP Light" FontSize="8" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Difficulty}" />
+                                            <TextBlock Text="{Binding Duration}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Description}" FontFamily="Segoe WP Semibold" FontSize="14" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </PivotItem>
 
             <!-- Pivot Item Three-->
-            <PivotItem
-                Header="favorite">
+            <PivotItem Header="favorite">
             </PivotItem>
         </Pivot>
-        <StackPanel x:Name="form" Visibility="Collapsed" Opacity="1" Height="Auto" Width="Auto" Background="Black">
+        <StackPanel x:Name="FormCreateHunt" Visibility="Collapsed" Opacity="1" Height="Auto" Width="Auto" Background="Black">
             <TextBlock Text="create a hunt" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
             <StackPanel Width="Auto" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,25,0,0">
                 <TextBox x:Name="titleBox" Width="300" Margin="0,0,0,50" PlaceholderText="Title" />
