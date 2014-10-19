@@ -45,9 +45,6 @@ namespace Dubloon
 
         public Main()
         {
-            Windows.UI.Core.CoreWindow coreWindow = CoreWindow.GetForCurrentThread(); // This needs to be set before InitializeComponent sets up event registration for app visibility
-            coreWindow.VisibilityChanged += OnVisibilityChanged;
-            
             this.InitializeComponent();
             _cd = Window.Current.CoreWindow.Dispatcher;
 
@@ -116,24 +113,6 @@ namespace Dubloon
             //System.Diagnostics.Debug.WriteLine(blah6[0].Name);
         }
 
-        private void OnVisibilityChanged(CoreWindow sender, VisibilityChangedEventArgs args)
-        {
-            // NOTE: After the app is no longer visible on the screen and before the app is suspended
-            // you might want your app to use toast notification for any geofence activity.
-            // By registering for VisibiltyChanged the app is notified when the app is no longer visible in the foreground.
-
-            if (args.Visible)
-            {
-                // register for foreground events
-                GeofenceMonitor.Current.GeofenceStateChanged += OnGeofenceStateChanged;
-            }
-            else
-            {
-                // unregister foreground events (let background capture events)
-                GeofenceMonitor.Current.GeofenceStateChanged -= OnGeofenceStateChanged;
-            }
-        }
-
         public async void OnGeofenceStateChanged(GeofenceMonitor sender, object e)
         {
             var reports = sender.ReadReports();
@@ -156,6 +135,7 @@ namespace Dubloon
                         // Your app takes action based on the entered event
                         //TEST GEOFENCE ENTRANCE
                         System.Diagnostics.Debug.WriteLine("You've enetered a geofence!");
+                        Toast.Trigger(geofence.Id);
 
                         // NOTE: You might want to write your app to take particular
                         // action based on whether the app has internet connectivity.
@@ -228,6 +208,7 @@ namespace Dubloon
                     // do your apps work here
                     //TEST RETURN-TO-APP EVENT
                     System.Diagnostics.Debug.WriteLine("Returning to app!!!");
+                    this.Frame.Navigate(typeof(Views.Node));
                 });
             }
         }

@@ -202,15 +202,5 @@ namespace Dubloon.Views
         }
 
         #endregion
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(Node));
-        }
-
-        private void ButtonCreateNode_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

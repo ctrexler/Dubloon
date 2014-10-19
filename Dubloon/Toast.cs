@@ -1,26 +1,23 @@
-﻿using System;
+﻿using Dubloon.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Background;
 using Windows.Devices.Geolocation.Geofencing;
 using Windows.UI.Notifications;
-using Windows.UI.Xaml;
 
-namespace BackgroundTasks
+namespace Dubloon
 {
-    public sealed class GeofenceBackgroundTask : IBackgroundTask
+    class Toast
     {
-        public void Run(IBackgroundTaskInstance taskInstance)
+        public static void Trigger(string value)
         {
-            System.Diagnostics.Debug.WriteLine("Triggered from background!");
-            string value = "";
-            foreach (GeofenceStateChangeReport report in GeofenceMonitor.Current.ReadReports())
-            {
-                Geofence geofence = report.Geofence;
-                value = geofence.Id.ToString();
-            }
+            //foreach (GeofenceStateChangeReport report in GeofenceMonitor.Current.ReadReports())
+            //{
+            //    Geofence geofence = report.Geofence;
+            //    value = geofence.Id.ToString();
+            //}
 
             System.Diagnostics.Debug.WriteLine("Toast");
             var toastTemplate = ToastTemplateType.ToastText02;

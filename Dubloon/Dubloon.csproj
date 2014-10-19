@@ -115,6 +115,7 @@
     </Compile>
     <Compile Include="Models\AzureTables.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Toast.cs" />
     <Compile Include="ViewModels\AddToAzure.cs" />
     <Compile Include="ViewModels\PullFromAzure.cs" />
     <Compile Include="Views\Hunt.xaml.cs">
