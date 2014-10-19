@@ -45,8 +45,12 @@ namespace Dubloon
 
         public Main()
         {
+            Windows.UI.Core.CoreWindow coreWindow = CoreWindow.GetForCurrentThread(); // This needs to be set before InitializeComponent sets up event registration for app visibility
+            coreWindow.VisibilityChanged += OnVisibilityChanged;
+            
             this.InitializeComponent();
             _cd = Window.Current.CoreWindow.Dispatcher;
+
             Initialize();
 
             this.NavigationCacheMode = NavigationCacheMode.Required;
@@ -110,6 +114,24 @@ namespace Dubloon
 
             //var blah6 = await vm2.PullNodesFromAzure();
             //System.Diagnostics.Debug.WriteLine(blah6[0].Name);
+        }
+
+        private void OnVisibilityChanged(CoreWindow sender, VisibilityChangedEventArgs args)
+        {
+            // NOTE: After the app is no longer visible on the screen and before the app is suspended
+            // you might want your app to use toast notification for any geofence activity.
+            // By registering for VisibiltyChanged the app is notified when the app is no longer visible in the foreground.
+
+            if (args.Visible)
+            {
+                // register for foreground events
+                GeofenceMonitor.Current.GeofenceStateChanged += OnGeofenceStateChanged;
+            }
+            else
+            {
+                // unregister foreground events (let background capture events)
+                GeofenceMonitor.Current.GeofenceStateChanged -= OnGeofenceStateChanged;
+            }
         }
 
         public async void OnGeofenceStateChanged(GeofenceMonitor sender, object e)
@@ -323,7 +345,7 @@ namespace Dubloon
         //    });
         //}
 
-        private void CreateGeofence(string Id, double Latitude, double Longitude, double Radius)
+        public static void CreateGeofence(string Id, double Latitude, double Longitude, double Radius)
         {
             Geofence geofence = null;
 

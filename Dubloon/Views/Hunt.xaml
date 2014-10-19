@@ -53,7 +53,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                                <Image Source="Assets/TreasureMap.png" Height="50" Width="75" />
+                                <Image Source="ms-appx:///Assets/Trail.png" Height="50" Width="75" />
                                     <TextBlock Text="{Binding Name}" FontFamily="Segoe WP Black" FontSize="20" FontWeight="Bold" TextWrapping="WrapWholeWords" />
                             </StackPanel>
                     </DataTemplate>

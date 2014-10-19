@@ -138,6 +138,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\crosshairs.png" />
+    <Content Include="Assets\Node.png" />
+    <Content Include="Assets\Trail.png" />
     <Content Include="Assets\TreasureMap.png" />
     <Content Include="Assets\Logo.scale-240.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />

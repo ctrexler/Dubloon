@@ -1,15 +1,20 @@
 ﻿using Dubloon.Common;
+using Dubloon.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
+using Windows.Storage.Streams;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
@@ -27,14 +32,104 @@ namespace Dubloon.Views
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
+        public ObservableCollection<TableNodes> nodes = new ObservableCollection<TableNodes>();
+        bool mapIconExists = false;
 
         public Trail()
         {
             this.InitializeComponent();
+            Initialize();
 
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+        }
+
+        public async void Initialize()
+        {
+            CenterMap();
+            var nodessResponse = await ViewModels.PullFromAzure.PullNodesFromAzure();
+            foreach (TableNodes n in nodessResponse.Where(id => id.TrailId == PassedData.Id))
+            {
+                nodes.Add(n);
+            }
+            TreasureMap_Populate();
+        }
+        async private void CenterMap()
+        {
+            Geolocator geolocator = new Geolocator();
+            Geoposition geoposition = await geolocator.GetGeopositionAsync();
+            TreasureMap.Center = geoposition.Coordinate.Point;
+            TreasureMap.ZoomLevel = 16;
+        }
+        private void Image_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            CenterMap();
+        }
+
+        private void TreasureMap_MapTapped(Windows.UI.Xaml.Controls.Maps.MapControl sender, Windows.UI.Xaml.Controls.Maps.MapInputEventArgs args)
+        {
+            List<MapElement> pushpins = new List<MapElement>();
+            pushpins = TreasureMap.FindMapElementsAtOffset(args.Position).ToList();
+
+            if (pushpins.Count != 0)
+            {
+                this.Frame.Navigate(typeof(Node));
+                PassedData.Title = (pushpins.First() as MapIcon).Title;
+            }
+            if (mapIconExists)
+            {
+                TreasureMap.MapElements.Remove(TreasureMap.MapElements.Last());
+            }
+            InputLatitude.Text = Math.Round(args.Location.Position.Latitude, 3).ToString();
+            InputLongitude.Text = Math.Round(args.Location.Position.Longitude, 3).ToString();
+            MapIcon mapicon = new MapIcon();
+            mapicon.Location = new Geopoint(new BasicGeoposition()
+            {
+                Latitude = args.Location.Position.Latitude,
+                Longitude = args.Location.Position.Longitude
+            });
+            mapicon.NormalizedAnchorPoint = new Point(0.5, 0.5);
+            mapicon.Title = InputName.Text;
+            mapicon.Image =
+            RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/xMarksTheSpot.png"));
+            TreasureMap.MapElements.Add(mapicon);
+            mapIconExists = true;
+        }
+
+        private void TreasureMap_Populate()
+        {
+            foreach (TableNodes n in nodes)
+            {
+                MapIcon mapicon = new MapIcon();
+                mapicon.Location = new Geopoint(new BasicGeoposition()
+                {
+                    Latitude = n.Latitude,
+                    Longitude = n.Longitude
+                });
+                mapicon.NormalizedAnchorPoint = new Point(0.5, 0.5);
+                mapicon.Title = n.Name;
+                mapicon.Image =
+                RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/xMarksTheSpot.png"));
+                TreasureMap.MapElements.Add(mapicon);
+            }
+        }
+
+        async private void ButtonSubmitNode_Click(object sender, RoutedEventArgs e)
+        {
+            var nodesResponse = await ViewModels.PullFromAzure.PullNodesFromAzure();
+            if (!nodesResponse.Any(n => n.Name == InputName.Text))
+            {
+                var item = await ViewModels.AddToAzure.AddNodeToAzure(InputName.Text, Double.Parse(InputLatitude.Text), Double.Parse(InputLongitude.Text), Int32.Parse(InputRadius.Text), PassedData.Id);
+                nodes.Add(item);
+                Main.CreateGeofence(item.Name, item.Latitude, item.Longitude, item.Radius);
+                System.Diagnostics.Debug.WriteLine("Sent to azure!");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Already in the list!");
+            }
+            TreasureMap_Populate();
         }
 
         /// <summary>
@@ -111,6 +206,11 @@ namespace Dubloon.Views
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(Node));
+        }
+
+        private void ButtonCreateNode_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

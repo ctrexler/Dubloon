@@ -168,7 +168,7 @@ namespace Dubloon.Views
         }
         private void ListViewTrails_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.Frame.Navigate(typeof(Views.Node));
+            this.Frame.Navigate(typeof(Views.Trail));
             var ListViewSelection = e.AddedItems.Cast<TableTrails>().ToList().First();
             Views.PassedData.Title = ListViewSelection.Name;
             Views.PassedData.Id = ListViewSelection.HuntId;

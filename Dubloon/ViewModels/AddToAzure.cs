@@ -33,7 +33,7 @@ namespace Dubloon.ViewModels
             await App.MobileService.GetTable<TableTrails>().InsertAsync(item);
             return item;
         }
-        public static async void AddNodeToAzure(string name, double latitude, double longitude, int radius, string trailid)
+        public static async Task<TableNodes> AddNodeToAzure(string name, double latitude, double longitude, int radius, string trailid)
         {
             TableNodes item = new TableNodes
             {
@@ -44,6 +44,7 @@ namespace Dubloon.ViewModels
                 TrailId = trailid
             };
             await App.MobileService.GetTable<TableNodes>().InsertAsync(item);
+            return item;
         }
     }
 }
