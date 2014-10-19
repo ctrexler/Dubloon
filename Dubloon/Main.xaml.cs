@@ -284,20 +284,6 @@ namespace Dubloon
         //    listView.ScrollIntoView(newItem, ScrollIntoViewAlignment.Leading);
         //}
 
-        /// <summary>
-        /// Invoked when an item within a section is clicked.
-        /// </summary>
-        private void ItemView_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            // Navigate to the appropriate destination page, configuring the new page
-            // by passing required information as a navigation parameter
-            var itemId = ((SampleDataItem)e.ClickedItem).UniqueId;
-            if (!Frame.Navigate(typeof(ItemPage), itemId))
-            {
-                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
-            }
-        }
-
         #region NavigationHelper registration
 
         /// <summary>
@@ -474,6 +460,15 @@ namespace Dubloon
             this.ListViewHunts.ItemsSource = hunts;
         }
 
-        
+        private void ListViewHunts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(Views.Hunt));
+            var ListViewSelection = e.AddedItems.Cast<TableHunts>().ToList().First();
+            Views.PassedData.Title = ListViewSelection.Title;
+            Views.PassedData.Author = ListViewSelection.Author;
+            Views.PassedData.Description = ListViewSelection.Description;
+            Views.PassedData.Difficulty = ListViewSelection.Difficulty;
+            Views.PassedData.Duration = ListViewSelection.Duration;
+        }
     }
 }

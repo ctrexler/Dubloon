@@ -27,7 +27,7 @@
 
             <!-- Pivot Item Two-->
             <PivotItem Header="corbin's">
-                <ListView Name="ListViewHunts" Loaded="ListViewHunts_Loaded">
+                <ListView Name="ListViewHunts" Loaded="ListViewHunts_Loaded" SelectionChanged="ListViewHunts_SelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical"  Margin="0,0,0,20" >
