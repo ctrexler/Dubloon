@@ -404,14 +404,17 @@ namespace Dubloon
         {
             if ((sender as Pivot).SelectedIndex == 0)
             {
+                ButtonCreateHunt.Visibility = Visibility.Collapsed;
                 System.Diagnostics.Debug.WriteLine("The pivot is at current");
             }
             else if ((sender as Pivot).SelectedIndex == 1)
             {
+                ButtonCreateHunt.Visibility = Visibility.Visible;
                 System.Diagnostics.Debug.WriteLine("The pivot is at corbin's");
             }
             else if ((sender as Pivot).SelectedIndex == 2)
             {
+                ButtonCreateHunt.Visibility = Visibility.Collapsed;
                 System.Diagnostics.Debug.WriteLine("The pivot is at favorite");
             }
         }
@@ -420,5 +423,29 @@ namespace Dubloon
         {
             this.Frame.Navigate(typeof(Views.Trail));
         }
+
+        private void ButtonCreateHunt_Click(object sender, RoutedEventArgs e)
+        {
+            form.Visibility = Visibility.Visible;
+            ButtonCreateHunt.Visibility = Visibility.Collapsed;
+            ButtonCancelHunt.Visibility = Visibility.Visible;
+            ButtonSubmitHunt.Visibility = Visibility.Visible;
+        }
+        private void ButtonCancelHunt_Click(object sender, RoutedEventArgs e)
+        {
+            form.Visibility = Visibility.Collapsed;
+            ButtonCreateHunt.Visibility = Visibility.Visible;
+            ButtonCancelHunt.Visibility = Visibility.Collapsed;
+            ButtonSubmitHunt.Visibility = Visibility.Collapsed;
+        }
+        private void ButtonSubmitHunt_Click(object sender, RoutedEventArgs e)
+        {
+            form.Visibility = Visibility.Collapsed;
+            ButtonCreateHunt.Visibility = Visibility.Visible;
+            ButtonCancelHunt.Visibility = Visibility.Collapsed;
+            ButtonSubmitHunt.Visibility = Visibility.Collapsed;
+        }
+
+        
     }
 }

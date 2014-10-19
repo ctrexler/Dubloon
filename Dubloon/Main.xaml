@@ -36,5 +36,24 @@
                 Header="favorite">
             </PivotItem>
         </Pivot>
+        <StackPanel x:Name="form" Visibility="Collapsed" Opacity="1" Height="Auto" Width="Auto" Background="Black">
+            <TextBlock Text="create a hunt" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+            <StackPanel Width="Auto" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,25,0,0">
+                <TextBox x:Name="titleBox" Width="300" Margin="0,0,0,50" PlaceholderText="Title" />
+                <TextBox x:Name="authorBox" Width="300" Margin="0,0,0,50" PlaceholderText="Author" />
+                <TextBox x:Name="descriptionBox" Width="300" TextWrapping="Wrap" Margin="0,0,0,25" PlaceholderText="Description" Height="163" />
+                <TextBlock Text="Difficulty" FontSize="16" FontFamily="Segoe WP Semibold" FontWeight="Bold" Margin="3" Width="297"/>
+                <Slider x:Name="difficultySlider" Width="300" LargeChange="1" Maximum="5" Minimum="1" TickFrequency="1" TickPlacement="Inline" Value="3" />
+                <TextBlock Width="350" Text="Very Easy                  Easy                 Medium                 Hard               Very Hard" FontSize="10" FontFamily="Segoe WP Light" Margin="0, -20, 0, 0"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Name="ButtonCreateHunt" Label="Create Hunt" Icon="Add" Visibility="Collapsed" Click="ButtonCreateHunt_Click" />
+            <AppBarButton Name="ButtonCancelHunt" Label="Cancel" Icon="Cancel" Visibility="Collapsed" Click="ButtonCancelHunt_Click" />
+            <AppBarButton Name="ButtonSubmitHunt" Label="Submit" Icon="Upload" Visibility="Collapsed" Click="ButtonSubmitHunt_Click" />
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>
