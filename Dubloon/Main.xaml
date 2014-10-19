@@ -22,7 +22,7 @@
         <Pivot Name="Pivot" Title="DUBLOON" SelectionChanged="pivot_SelectionChanged">
             <!-- Pivot Item One-->
             <PivotItem Header="current">
-                <Button Content="CLICK!" Click="Button_Click" />
+                <TextBlock Text="It appears you aren't currently on any hunts :(" FontSize="16" FontFamily="Segoe WP Black" FontWeight="Bold" />
             </PivotItem>
 
             <!-- Pivot Item Two-->
@@ -54,6 +54,7 @@
 
             <!-- Pivot Item Three-->
             <PivotItem Header="favorite">
+                <TextBlock Text="No hunts marked favorite as of yet!" FontSize="16" FontFamily="Segoe WP Black" FontWeight="Bold" />
             </PivotItem>
         </Pivot>
         <StackPanel x:Name="FormCreateHunt" Visibility="Collapsed" Opacity="1" Height="Auto" Width="Auto" Background="Black">

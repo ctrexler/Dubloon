@@ -49,7 +49,31 @@
 
         <!--TODO: Content should be placed within the following grid-->
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <Button Content="CLICK" Click="Button_Click"/>
+            <ListView Name="ListViewTrails" Loaded="ListViewTrails_Loaded" SelectionChanged="ListViewTrails_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                                <Image Source="Assets/TreasureMap.png" Height="50" Width="75" />
+                                    <TextBlock Text="{Binding Name}" FontFamily="Segoe WP Black" FontSize="20" FontWeight="Bold" TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
+
+        <StackPanel x:Name="FormCreateTrail" Visibility="Collapsed" Opacity="1" Height="Auto" Width="Auto" Background="Black">
+            <TextBlock Text="add a trail" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+            <StackPanel Width="Auto" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,25,0,0">
+                <TextBox x:Name="InputName" Width="300" Margin="0,0,0,50" PlaceholderText="Title" />
+            </StackPanel>
+        </StackPanel>
     </Grid>
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Name="ButtonCreateTrail" Label="Create Trail" Icon="Add" Visibility="Visible" Click="ButtonCreateTrail_Click" />
+            <AppBarButton Name="ButtonCancelTrail" Label="Cancel" Icon="Cancel" Visibility="Collapsed" Click="ButtonCancelTrail_Click" />
+            <AppBarButton Name="ButtonSubmitTrail" Label="Submit" Icon="Upload" Visibility="Collapsed" Click="ButtonSubmitTrail_Click" />
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>

@@ -1,6 +1,8 @@
 ﻿using Dubloon.Common;
+using Dubloon.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -27,14 +29,25 @@ namespace Dubloon.Views
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
+        ObservableCollection<TableTrails> trails = new ObservableCollection<TableTrails>();
 
         public Hunt()
         {
             this.InitializeComponent();
+            Initialize();
 
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+        }
+
+        public async void Initialize()
+        {
+            var trailsResponse = await ViewModels.PullFromAzure.PullTrailsFromAzure();
+            foreach (TableTrails t in trailsResponse.Where(id => id.HuntId == PassedData.Id))
+            {
+                trails.Add(t);
+            }
         }
 
         /// <summary>
@@ -111,6 +124,54 @@ namespace Dubloon.Views
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(Trail));
+        }
+
+        private void ListViewTrails_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.ListViewTrails = (ListView)sender;
+            this.ListViewTrails.ItemsSource = trails;
+        }
+        private void ButtonCreateTrail_Click(object sender, RoutedEventArgs e)
+        {
+            FormCreateTrail.Visibility = Visibility.Visible;
+            ButtonCreateTrail.Visibility = Visibility.Collapsed;
+            ButtonCancelTrail.Visibility = Visibility.Visible;
+            ButtonSubmitTrail.Visibility = Visibility.Visible;
+
+            InputName.Text = "";
+        }
+        private void ButtonCancelTrail_Click(object sender, RoutedEventArgs e)
+        {
+            FormCreateTrail.Visibility = Visibility.Collapsed;
+            ButtonCreateTrail.Visibility = Visibility.Visible;
+            ButtonCancelTrail.Visibility = Visibility.Collapsed;
+            ButtonSubmitTrail.Visibility = Visibility.Collapsed;
+        }
+        private async void ButtonSubmitTrail_Click(object sender, RoutedEventArgs e)
+        {
+            var trailsResponse = await ViewModels.PullFromAzure.PullTrailsFromAzure();
+            if (!trailsResponse.Any(t => t.Name == InputName.Text))
+            {
+                var item = await ViewModels.AddToAzure.AddTrailToAzure(InputName.Text, PassedData.Id);
+                trails.Add(item);
+                System.Diagnostics.Debug.WriteLine("Sent to azure!");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Already in the list!");
+            }
+
+            FormCreateTrail.Visibility = Visibility.Collapsed;
+            ButtonCreateTrail.Visibility = Visibility.Visible;
+            ButtonCancelTrail.Visibility = Visibility.Collapsed;
+            ButtonSubmitTrail.Visibility = Visibility.Collapsed;
+        }
+        private void ListViewTrails_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(Views.Node));
+            var ListViewSelection = e.AddedItems.Cast<TableTrails>().ToList().First();
+            Views.PassedData.Title = ListViewSelection.Name;
+            Views.PassedData.Id = ListViewSelection.HuntId;
         }
     }
 }

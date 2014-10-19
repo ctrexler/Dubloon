@@ -410,11 +410,6 @@ namespace Dubloon
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(Views.Hunt));
-        }
-
         private void ButtonCreateHunt_Click(object sender, RoutedEventArgs e)
         {
             FormCreateHunt.Visibility = Visibility.Visible;
@@ -464,6 +459,7 @@ namespace Dubloon
         {
             this.Frame.Navigate(typeof(Views.Hunt));
             var ListViewSelection = e.AddedItems.Cast<TableHunts>().ToList().First();
+            Views.PassedData.Id = ListViewSelection.Id;
             Views.PassedData.Title = ListViewSelection.Title;
             Views.PassedData.Author = ListViewSelection.Author;
             Views.PassedData.Description = ListViewSelection.Description;
