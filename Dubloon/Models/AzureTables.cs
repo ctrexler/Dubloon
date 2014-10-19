@@ -12,7 +12,7 @@ namespace Dubloon.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string Author { get; set; }
-        public int Difficulty { get; set; }
+        public double Difficulty { get; set; }
         public int Duration { get; set; }
     }
 

@@ -30,19 +30,22 @@
                 <ListView Name="ListViewHunts" Loaded="ListViewHunts_Loaded">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical"  Margin="0,0,0,20" >
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                                     <Image Source="Assets/TreasureMap.png" Height="50" Width="75" />
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock Text="{Binding Title}" FontFamily="Segoe WP Black" FontSize="20" />
-                                        <TextBlock Text="{Binding Author}" FontFamily="Segoe WP Light" FontSize="8" />
+                                        <TextBlock Text="{Binding Title}" FontFamily="Segoe WP Black" FontSize="20" FontWeight="Bold" TextWrapping="WrapWholeWords" />
+                                        <TextBlock Text="{Binding Author}" FontFamily="Segoe WP Light" FontSize="10" Margin="0,0,0,8" TextWrapping="WrapWholeWords"/>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Difficulty}" />
+                                            <TextBlock Text="Difficulty: " Margin="0,0,5,0" />
+                                            <ProgressBar Value="{Binding Difficulty}" SmallChange="0" LargeChange="0" Maximum="5" BorderThickness="1" BorderBrush="White" Background="#FF130A4C" Foreground="#FF498FFF" Margin="0,0,8,0" Height="10" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Duration: " Margin="0,0,5,0" />
                                             <TextBlock Text="{Binding Duration}" />
+                                            <TextBlock Text="h" />
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
-                                <TextBlock Text="{Binding Description}" FontFamily="Segoe WP Semibold" FontSize="14" />
+                                <TextBlock Text="{Binding Description}" FontFamily="Segoe WP Semibold" FontSize="14" TextWrapping="WrapWholeWords" />
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -56,11 +59,11 @@
         <StackPanel x:Name="FormCreateHunt" Visibility="Collapsed" Opacity="1" Height="Auto" Width="Auto" Background="Black">
             <TextBlock Text="create a hunt" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
             <StackPanel Width="Auto" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,25,0,0">
-                <TextBox x:Name="titleBox" Width="300" Margin="0,0,0,50" PlaceholderText="Title" />
-                <TextBox x:Name="authorBox" Width="300" Margin="0,0,0,50" PlaceholderText="Author" />
-                <TextBox x:Name="descriptionBox" Width="300" TextWrapping="Wrap" Margin="0,0,0,25" PlaceholderText="Description" Height="163" />
+                <TextBox x:Name="InputTitle" Width="300" Margin="0,0,0,50" PlaceholderText="Title" />
+                <TextBox x:Name="InputAuthor" Width="300" Margin="0,0,0,50" PlaceholderText="Author" />
+                <TextBox x:Name="InputDescription" Width="300" TextWrapping="Wrap" Margin="0,0,0,25" PlaceholderText="Description" Height="163" />
                 <TextBlock Text="Difficulty" FontSize="16" FontFamily="Segoe WP Semibold" FontWeight="Bold" Margin="3" Width="297"/>
-                <Slider x:Name="difficultySlider" Width="300" LargeChange="1" Maximum="5" Minimum="1" TickFrequency="1" TickPlacement="Inline" Value="3" />
+                <Slider x:Name="InputDifficulty" Width="300" LargeChange="1" Maximum="5" Minimum="1" TickFrequency="1" TickPlacement="Inline" Value="3" />
                 <TextBlock Width="350" Text="Very Easy                  Easy                 Medium                 Hard               Very Hard" FontSize="10" FontFamily="Segoe WP Light" Margin="0, -20, 0, 0"/>
             </StackPanel>
         </StackPanel>

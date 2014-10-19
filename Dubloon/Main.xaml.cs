@@ -74,11 +74,9 @@ namespace Dubloon
             CreateGeofence("School", 40.427628, -86.917016, 100);
 
             var huntsResponse = await ViewModels.PullFromAzure.PullHuntsFromAzure();
-            System.Diagnostics.Debug.WriteLine(huntsResponse.Count);
             foreach (TableHunts h in huntsResponse)
             {
                 hunts.Add(h);
-                System.Diagnostics.Debug.WriteLine(h.Title);
             }
 
             //ViewModels.AddToAzure vm = new ViewModels.AddToAzure();
@@ -415,17 +413,14 @@ namespace Dubloon
             if ((sender as Pivot).SelectedIndex == 0)
             {
                 ButtonCreateHunt.Visibility = Visibility.Collapsed;
-                System.Diagnostics.Debug.WriteLine("The pivot is at current");
             }
             else if ((sender as Pivot).SelectedIndex == 1)
             {
                 ButtonCreateHunt.Visibility = Visibility.Visible;
-                System.Diagnostics.Debug.WriteLine("The pivot is at corbin's");
             }
             else if ((sender as Pivot).SelectedIndex == 2)
             {
                 ButtonCreateHunt.Visibility = Visibility.Collapsed;
-                System.Diagnostics.Debug.WriteLine("The pivot is at favorite");
             }
         }
 
@@ -440,6 +435,11 @@ namespace Dubloon
             ButtonCreateHunt.Visibility = Visibility.Collapsed;
             ButtonCancelHunt.Visibility = Visibility.Visible;
             ButtonSubmitHunt.Visibility = Visibility.Visible;
+
+            InputTitle.Text = "";
+            InputAuthor.Text = "";
+            InputDescription.Text = "";
+            InputDifficulty.Value = 3;
         }
         private void ButtonCancelHunt_Click(object sender, RoutedEventArgs e)
         {
@@ -448,8 +448,20 @@ namespace Dubloon
             ButtonCancelHunt.Visibility = Visibility.Collapsed;
             ButtonSubmitHunt.Visibility = Visibility.Collapsed;
         }
-        private void ButtonSubmitHunt_Click(object sender, RoutedEventArgs e)
+        private async void ButtonSubmitHunt_Click(object sender, RoutedEventArgs e)
         {
+            var huntsResponse = await ViewModels.PullFromAzure.PullHuntsFromAzure();
+            if (!huntsResponse.Any(h => h.Title == InputTitle.Text))
+            {
+                var item = await ViewModels.AddToAzure.AddHuntToAzure(InputTitle.Text, InputAuthor.Text, InputDescription.Text, InputDifficulty.Value);
+                hunts.Add(item);
+                System.Diagnostics.Debug.WriteLine("Sent to azure!");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Already in the list!");
+            }
+
             FormCreateHunt.Visibility = Visibility.Collapsed;
             ButtonCreateHunt.Visibility = Visibility.Visible;
             ButtonCancelHunt.Visibility = Visibility.Collapsed;
